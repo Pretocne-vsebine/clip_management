@@ -1,0 +1,16 @@
+sudo: required
+language: java
+
+jdk:
+  - openjdk8
+
+services:
+  - docker
+
+script:
+  - mvn clean package -U
+  - docker build -t zigakern/clip_management .
+
+after_success:
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - docker push zigakern/clip_management
