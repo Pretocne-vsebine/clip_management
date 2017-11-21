@@ -1,0 +1,23 @@
+version: "3.2"
+services:
+  db:
+    image: mariadb:10.3.2
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - type: volume
+        target: /var/lib/mysql
+        source: clip_db
+  clip_management:
+    image: zigakern/clip_management
+    ports:
+      - 8080:8080
+    environment:
+      KUMULUZEE_DATASOURCES0_CONNECTIONURL: jdbc:mysql://db:3306/clips
+    depends_on:
+      - db
+
+volumes:
+    clip_db:

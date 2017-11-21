@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/clip_management.iml" filepath="$PROJECT_DIR$/clip_management.iml" />
+      <module fileurl="file://$PROJECT_DIR$/clip_managementBL/clip_managementBL.iml" filepath="$PROJECT_DIR$/clip_managementBL/clip_managementBL.iml" />
+      <module fileurl="file://$PROJECT_DIR$/clip_managementJPA/clip_managementJPA.iml" filepath="$PROJECT_DIR$/clip_managementJPA/clip_managementJPA.iml" />
+      <module fileurl="file://$PROJECT_DIR$/clip_managementREST/clip_managementREST.iml" filepath="$PROJECT_DIR$/clip_managementREST/clip_managementREST.iml" />
     </modules>
   </component>
 </project>

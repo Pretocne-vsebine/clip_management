@@ -6,11 +6,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="clip_management" />
+        <module name="clip_managementBL" />
+        <module name="clip_managementJPA" />
+        <module name="clip_managementREST" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="clip_management" target="1.5" />
+      <module name="clip_management" target="1.8" />
+      <module name="clip_managementBL" target="1.8" />
+      <module name="clip_managementJPA" target="1.8" />
+      <module name="clip_managementREST" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
