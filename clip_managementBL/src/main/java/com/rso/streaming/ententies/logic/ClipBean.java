@@ -6,6 +6,7 @@ import com.rso.streaming.ententies.Clip;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -17,43 +18,52 @@ public class ClipBean {
     @PersistenceContext(unitName = "clipPersistanceUnit")
     private EntityManager em;
 
+    @Inject
+    private RestConfig RestConfig;
+
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public List<Clip> getClips() {
         Query q = em.createNamedQuery("Clip.findAll");
         return (List<Clip>)q.getResultList();
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public Clip getClip(long clipId) {
         return em.find(Clip.class, clipId);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Clip createClip(Clip clip) {
-        em.persist(clip);
+        if(RestConfig.isWriteEnabled()){
+            em.persist(clip);
 
-        return clip;
+            return clip;
+        } else
+            return null;
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public boolean deleteClip(long clipId) {
-        Clip c = getClip(clipId);
+        if(RestConfig.isWriteEnabled()){
+            Clip c = getClip(clipId);
 
-        if(c == null)
-            return false;
-
-        em.remove(c);
-        return true;
+            if(c != null){
+                em.remove(c);
+                return true;
+            }
+        }
+        return false;
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Clip putClip(Clip clip) {
-        Clip a = em.find(Clip.class, clip.getID());
+        if(RestConfig.isWriteEnabled()){
+            Clip a = em.find(Clip.class, clip.getID());
 
-        if (a == null) {
-            return null;
+            if (a != null) {
+                return em.merge(clip);
+            }
         }
-
-        clip = em.merge(clip);
-
-        return clip;
+        return null;
     }
 }

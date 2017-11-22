@@ -4,7 +4,10 @@ import com.rso.streaming.ententies.Album;
 import com.rso.streaming.ententies.Clip;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -18,6 +21,10 @@ public class AlbumBean {
     @PersistenceContext(unitName = "clipPersistanceUnit")
     private EntityManager em;
 
+    @Inject
+    private RestConfig RestConfig;
+
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public List<Album> getAlbums() {
         Query q = em.createNamedQuery("Album.findAll");
         List<Album> al = (List<Album>)q.getResultList();
@@ -25,90 +32,57 @@ public class AlbumBean {
         return al;
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public Album getAlbum(long albumId) {
         return em.find(Album.class, albumId);
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Album createAlbum(Album album) {
-
-        try {
-            beginTx();
+        if(RestConfig.isWriteEnabled()){
             em.persist(album);
-            commitTx();
-        } catch (Exception e) {
-            rollbackTx();
+            return album;
         }
 
-        return album;
+        return null;
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Album addClip(long albumId, Clip c) {
-        Album a = getAlbum(albumId);
+        if(RestConfig.isWriteEnabled()) {
+            Album a = getAlbum(albumId);
 
-        if (a == null) {
-            return null;
-        }
-
-        try {
-            beginTx();
-            List<Clip> clips = a.getClips();
-            clips.add(c);
-            a = em.merge(a);
-            commitTx();
-        } catch (Exception e) {
-            rollbackTx();
-        }
-
-        return a;
-    }
-
-    public boolean deleteAlbum(long albumId) {
-        Album a = em.find(Album.class, albumId);
-
-        if (a != null) {
-            try {
-                beginTx();
-                em.remove(a);
-                commitTx();
-            } catch (Exception e) {
-                rollbackTx();
+            if (a != null) {
+                List<Clip> clips = a.getClips();
+                clips.add(c);
+                return em.merge(a);
             }
-        } else
-            return false;
-
-        return true;
+        }
+        return null;
     }
 
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public boolean deleteAlbum(long albumId) {
+        if(RestConfig.isWriteEnabled()) {
+            Album a = em.find(Album.class, albumId);
+
+            if (a != null) {
+                em.remove(a);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Album putAlbum(Album album) {
-        Album a = em.find(Album.class, album.getID());
+        if(RestConfig.isWriteEnabled()) {
+            Album a = em.find(Album.class, album.getID());
 
-        if (a == null) {
-            return null;
+            if (a != null) {
+                return em.merge(album);
+            }
         }
-
-        try {
-            beginTx();
-            album = em.merge(album);
-            commitTx();
-        } catch (Exception e) {
-            rollbackTx();
-        }
-
-        return album;
-    }
-
-    private void beginTx() {
-        if (!em.getTransaction().isActive())
-            em.getTransaction().begin();
-    }
-
-    private void commitTx() {
-        if (em.getTransaction().isActive())
-            em.getTransaction().commit();
-    }
-
-    private void rollbackTx() {
-        if (em.getTransaction().isActive())
-            em.getTransaction().rollback();
+        return null;
     }
 }

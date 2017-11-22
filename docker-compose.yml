@@ -1,6 +1,6 @@
 version: "3.2"
 services:
-  db:
+  db_mysql:
     image: mariadb:10.3.2
     ports:
       - 3306:3306
@@ -15,9 +15,10 @@ services:
     ports:
       - 8080:8080
     environment:
-      KUMULUZEE_DATASOURCES0_CONNECTIONURL: jdbc:mysql://db:3306/clips
+      - KUMULUZEE_DATASOURCES0_CONNECTIONURL=jdbc:mysql://db_mysql:3306/clips
+      - REST-PROPERTIES_EXTERNAL-DEPENDENCIES_CLIP-SERVICE_WRITE-ENABLED=1
     depends_on:
-      - db
+      - db_mysql
 
 volumes:
     clip_db:

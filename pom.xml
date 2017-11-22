@@ -38,6 +38,13 @@
         <dependencies>
             <dependency>
                 <groupId>com.kumuluz.ee</groupId>
+                <artifactId>kumuluzee-bom</artifactId>
+                <version>${kumuluz.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.kumuluz.ee</groupId>
                 <artifactId>kumuluzee-core</artifactId>
                 <version>${kumuluz.version}</version>
             </dependency>
