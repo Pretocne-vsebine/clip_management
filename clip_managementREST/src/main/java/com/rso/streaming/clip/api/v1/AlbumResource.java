@@ -62,10 +62,10 @@ public class AlbumResource {
             album = albumBean.createAlbum(album);
         }
 
-        if (album.getID() != null) {
+        if (album != null && album.getID() != null) {
             return Response.status(Response.Status.CREATED).entity(album).build();
         } else {
-            return Response.status(Response.Status.CONFLICT).entity(album).build();
+            return Response.status(Response.Status.CONFLICT).build();
         }
     }
 

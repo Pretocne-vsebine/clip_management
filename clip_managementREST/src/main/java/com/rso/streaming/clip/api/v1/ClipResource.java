@@ -5,7 +5,6 @@ import com.rso.streaming.ententies.logic.ClipBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -62,10 +61,10 @@ public class ClipResource {
             clip = clipBean.createClip(clip);
         }
 
-        if (clip.getID() != null) {
+        if (clip != null && clip.getID() != null) {
             return Response.status(Response.Status.CREATED).entity(clip).build();
         } else {
-            return Response.status(Response.Status.CONFLICT).entity(clip).build();
+            return Response.status(Response.Status.CONFLICT).build();
         }
     }
 

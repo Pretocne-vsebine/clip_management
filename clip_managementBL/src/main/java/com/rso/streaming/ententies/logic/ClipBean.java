@@ -1,18 +1,18 @@
 package com.rso.streaming.ententies.logic;
 
-import com.rso.streaming.ententies.Album;
 import com.rso.streaming.ententies.Clip;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
 
-@Stateless
+@ApplicationScoped
 public class ClipBean {
 
     @PersistenceContext(unitName = "clipPersistanceUnit")
@@ -21,49 +21,80 @@ public class ClipBean {
     @Inject
     private RestConfig RestConfig;
 
-    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public List<Clip> getClips() {
         Query q = em.createNamedQuery("Clip.findAll");
         return (List<Clip>)q.getResultList();
     }
 
-    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public Clip getClip(long clipId) {
         return em.find(Clip.class, clipId);
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Clip createClip(Clip clip) {
-        if(RestConfig.isWriteEnabled()){
-            em.persist(clip);
+        if(RestConfig.getWriteEnabled()){
+            try {
+                beginTx();
+                em.persist(clip);
+                commitTx();
+            } catch (Exception e) {
+                rollbackTx();
+            }
 
             return clip;
         } else
             return null;
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public boolean deleteClip(long clipId) {
-        if(RestConfig.isWriteEnabled()){
+        if(RestConfig.getWriteEnabled()){
             Clip c = getClip(clipId);
 
             if(c != null){
-                em.remove(c);
+                try {
+                    beginTx();
+                    em.remove(c);
+                    commitTx();
+                } catch (Exception e) {
+                    rollbackTx();
+                }
+
                 return true;
             }
         }
         return false;
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public Clip putClip(Clip clip) {
-        if(RestConfig.isWriteEnabled()){
-            Clip a = em.find(Clip.class, clip.getID());
+        if(RestConfig.getWriteEnabled()){
+            Clip c = em.find(Clip.class, clip.getID());
 
-            if (a != null) {
-                return em.merge(clip);
+            if (c != null) {
+                try {
+                    beginTx();
+                    c = em.merge(clip);
+                    commitTx();
+                } catch (Exception e) {
+                    rollbackTx();
+                }
+
+                return c;
             }
         }
         return null;
+    }
+
+    private void beginTx() {
+        if (!em.getTransaction().isActive())
+            em.getTransaction().begin();
+    }
+
+    private void commitTx() {
+        if (em.getTransaction().isActive())
+            em.getTransaction().commit();
+    }
+
+    private void rollbackTx() {
+        if (em.getTransaction().isActive())
+            em.getTransaction().rollback();
     }
 }

@@ -9,10 +9,15 @@ import javax.enterprise.context.ApplicationScoped;
 @ConfigBundle("rest-properties")
 public class RestConfig {
 
-        @ConfigValue(value = "external-dependencies.clip-service.write-enabled", watch = true)
-        private boolean writeEnabled;
+    @ConfigValue(value = "external-dependencies.clip-service.write-enabled", watch = true)
+    private boolean writeEnabled;
 
-        public boolean isWriteEnabled() {
-            return writeEnabled;
-        }
+    public boolean getWriteEnabled() {
+        return writeEnabled;
+    }
+
+    public void setWriteEnabled(boolean writeEnabled) {
+        this.writeEnabled = writeEnabled;
+        System.out.println(writeEnabled);
+    }
 }
