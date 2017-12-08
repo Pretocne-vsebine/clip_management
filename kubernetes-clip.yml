@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: clip-management
+    labels:
+        app: clip-management
+spec:
+    ports:
+        - port: 8081
+    selector:
+        app: clip-management
+        tier: app
+    type: NodePort
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata: 
+    name: clip-management
+    labels: 
+      app: clip-management
+spec:
+    minReadySeconds: 0
+    replicas: 1
+    selector:
+        matchLabels:
+            app: clip-management
+            tier: app
+    template: 
+        metadata:
+            labels:
+                app: clip-management
+                tier: app
+        spec:
+            containers:
+                - name: app-clip
+                  image: zigakern/clip_management
+                  env:
+                    - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
+                      value: jdbc:mysql://clip-mysql:3306/clips
+                    - name: KUMULUZEE_CONFIG_ETCD_HOSTS
+                      value: http://etcd:2379
+                    - name: KUMULUZEE_DISCOVERY_ETCD_HOSTS
+                      value: http://etcd:2379
+                  ports:
+                    - containerPort: 8081
+                      name: app
+                      protocol: TCP

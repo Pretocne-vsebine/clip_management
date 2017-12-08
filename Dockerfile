@@ -6,6 +6,6 @@ WORKDIR /app
 
 ADD ./clip_managementREST/target/clip_management-REST-1.0-SNAPSHOT.jar /app
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["java", "-jar", "clip_management-REST-1.0-SNAPSHOT.jar"]

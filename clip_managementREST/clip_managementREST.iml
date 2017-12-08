@@ -94,6 +94,9 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.8.10" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.8.10" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.module:jackson-module-afterburner:2.8.10" level="project" />
+    <orderEntry type="library" name="Maven: com.kumuluz.ee.discovery:kumuluzee-discovery-etcd:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.kumuluz.ee.discovery:kumuluzee-discovery-common:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.vdurmont:semver4j:2.0.2" level="project" />
     <orderEntry type="module" module-name="clip_managementBL" />
     <orderEntry type="library" name="Maven: com.kumuluz.ee:kumuluzee-cdi-weld:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: javax.enterprise:cdi-api:1.2" level="project" />

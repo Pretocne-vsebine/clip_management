@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: clip-mysql
+    labels:
+        app: clip-management
+spec:
+    ports:
+        - port: 3306
+    selector:
+        app: clip-management
+        tier: mysql
+    clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: clip-management
+spec:
+    selector:
+        matchLabels:
+            type: local
+            app: clip-management
+    accessModes:
+        - ReadWriteOnce
+    resources:
+        requests:
+            storage: 5Gi
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata: 
+    name: clip-mysql
+    labels: 
+      app: clip-management
+spec:
+    minReadySeconds: 10
+    replicas: 1
+    selector:
+        matchLabels:
+            app: clip-management
+            tier: mysql
+    template: 
+        metadata:
+            
+            labels:
+                app: clip-management
+                tier: mysql
+        spec:
+            containers:
+                - name: db-mysql
+                  image: mariadb:10.3.2
+                  env:
+                    - name: MYSQL_ROOT_PASSWORD
+                      value: root
+                    - name: MYSQL_DATABASE
+                      value: clips
+                  ports:
+                    - containerPort: 3306
+                      name: mysql
+                      protocol: TCP
+                  volumeMounts:
+                    - name: mysql-persistent-storage
+                      mountPath: /var/lib/mysql
+            volumes:
+                - name: mysql-persistent-storage
+                  persistentVolumeClaim:
+                      claimName: mysql-pv-claim
