@@ -2,6 +2,7 @@ package com.rso.streaming.clip.api.v1;
 
 import com.kumuluz.ee.logs.cdi.Log;
 import com.kumuluz.ee.logs.cdi.LogParams;
+import com.rso.streaming.clip.api.v1.logger.LogContextInterceptor;
 import com.rso.streaming.ententies.Album;
 import com.rso.streaming.ententies.logic.AlbumBean;
 import io.swagger.annotations.Api;
@@ -10,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -23,6 +25,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Log(LogParams.METRICS)
+@Interceptors(LogContextInterceptor.class)
 public class AlbumResource {
 
     @Inject
@@ -54,6 +57,12 @@ public class AlbumResource {
         }
 
         return Response.status(Response.Status.OK).entity(album).build();
+    }
+
+    @GET
+    @Path("/healthResponseCheck")
+    public Response getCheck() {
+        return Response.status(Response.Status.OK).build();
     }
 
     @POST

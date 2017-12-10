@@ -29,18 +29,28 @@ kumuluzee:
                  </Console>
                  <Socket name="logstash" host="a74a2a0e-e621-4208-84ae-7662068886fb-ls.logit.io" port="22776" protocol="tcp">
                      <JSONLayout complete="false" compact="true" eventEol="true" charset="UTF-8" properties="true"/>
-                 </Socket>-->
-
+                 </Socket>
              </Appenders>
              <Loggers>
                  <!-- Default logger -->
-                 <Root level="trace">
-                     <AppenderRef ref="console"/>
-                     <AppenderRef ref="logstash"/>
+                 <Root level="all">
+                     <AppenderRef ref="console" level="info"/>
+                     <AppenderRef ref="logstash" level="info"/>
                  </Root>
              </Loggers>
          </Configuration>'
+  health:
+      logs:
+            enabled: true
+            level: FINE
+            period-s: 60
+      checks:
+        data-source-health-check:
+          jndi-name: jdbc/ClipsDB
+        http-health-check:
+                connection-url: http://localhost:8081/v1/albums/healthResponseCheck
 rest-properties:
   external-dependencies:
     clip-service:
       write-enabled: true
+      is-healthy: true

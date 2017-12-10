@@ -2,13 +2,17 @@ package com.rso.streaming.clip.api.v1;
 
 import com.kumuluz.ee.logs.cdi.Log;
 import com.kumuluz.ee.logs.cdi.LogParams;
+import com.rso.streaming.clip.api.v1.logger.LogContextInterceptor;
+import com.rso.streaming.ententies.Album;
 import com.rso.streaming.ententies.Clip;
+import com.rso.streaming.ententies.logic.AlbumBean;
 import com.rso.streaming.ententies.logic.ClipBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -22,10 +26,14 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Log(LogParams.METRICS)
+@Interceptors(LogContextInterceptor.class)
 public class ClipResource {
 
     @Inject
     private ClipBean clipBean;
+
+    @Inject
+    private AlbumBean albumBean;
 
     @Context
     protected UriInfo uriInfo;
@@ -61,13 +69,18 @@ public class ClipResource {
         if (clip.getTitle().isEmpty() || clip.getAuthor().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         } else {
-            clip = clipBean.createClip(clip);
-        }
+            Album a = clip.getAlbum();
+            clip.setAlbum(null);
 
-        if (clip != null && clip.getID() != null) {
-            return Response.status(Response.Status.CREATED).entity(clip).build();
-        } else {
-            return Response.status(Response.Status.CONFLICT).build();
+            clip = clipBean.createClip(clip);
+
+            if (clip != null && clip.getID() != null) {
+                if(a != null)
+                    albumBean.addClip(a.getID(), clip);
+                return Response.status(Response.Status.CREATED).entity(clip).build();
+            } else {
+                return Response.status(Response.Status.CONFLICT).build();
+            }
         }
     }
 

@@ -1,9 +1,13 @@
 package com.rso.streaming.ententies.logic;
 
+import com.kumuluz.ee.common.config.EeConfig;
+import com.kumuluz.ee.common.runtime.EeRuntime;
 import com.kumuluz.ee.logs.*;
 import com.rso.streaming.ententies.Album;
 import com.rso.streaming.ententies.Clip;
+import org.apache.logging.log4j.ThreadContext;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -14,7 +18,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 @RequestScoped
 public class AlbumBean {
@@ -27,42 +33,54 @@ public class AlbumBean {
 
     private static final Logger LOG = LogManager.getLogger(AlbumBean.class.getName());
 
+    @PostConstruct
+    private void init() {
+        HashMap settings = new HashMap();
+        settings.put("environment", EeConfig.getInstance().getEnv().getName());
+        settings.put("serviceName", EeConfig.getInstance().getName());
+        settings.put("applicationVersion", EeConfig.getInstance().getVersion());
+        settings.put("uniqueInstanceId", EeRuntime.getInstance().getInstanceId());
+        settings.put("uniqueRequestId", UUID.randomUUID().toString());
+
+        ThreadContext.putAll(settings);
+    }
+
     public List<Album> getAlbums() {
         Query q = em.createNamedQuery("Album.findAll");
         List<Album> al = (List<Album>)q.getResultList();
 
-        LOG.trace("Returning all albums: {}", al);
+        LOG.info("Returning all albums: {}", al);
         return al;
     }
 
     public Album getAlbum(long albumId) {
         Album a = em.find(Album.class, albumId);
-        LOG.trace("Returning album with ID: {}: {}", albumId, a);
+        LOG.info("Returning album with ID: {}: {}", albumId, a);
         return em.find(Album.class, albumId);
     }
 
     @Transactional
     public Album createAlbum(Album album) {
-        LOG.trace("Creating album: {}", album);
+        LOG.info("Creating album: {}", album);
 
         if(RestConfig.getWriteEnabled()){
             try {
                 beginTx();
                 em.persist(album);
                 commitTx();
-                LOG.trace("Album created.");
+                LOG.info("Album created.");
             } catch (Exception e) {
                 LOG.error("Album creation not succesfull. {}", e);
                 rollbackTx();
             }
             return album;
         }
-        LOG.trace("Cannot create album. Write operations not enabled.");
+        LOG.info("Cannot create album. Write operations not enabled.");
         return null;
     }
 
     public Album addClip(long albumId, Clip c) {
-        LOG.trace("Adding clip: {} to album with ID: {}", c, albumId);
+        LOG.info("Adding clip: {} to album with ID: {}", c, albumId);
 
         if(RestConfig.getWriteEnabled()) {
             Album a = getAlbum(albumId);
@@ -76,7 +94,7 @@ public class AlbumBean {
                     beginTx();
                     a = em.merge(a);
                     commitTx();
-                    LOG.trace("Added clip to album");
+                    LOG.info("Added clip to album");
                 } catch (Exception e) {
                     rollbackTx();
                     LOG.error("Failed to add clip: {} to album: {}. An error occured: {}.", c, a, e);
@@ -84,14 +102,14 @@ public class AlbumBean {
 
                 return a;
             }
-            LOG.trace("Album with ID: {} not found.", albumId);
+            LOG.info("Album with ID: {} not found.", albumId);
         }
-        LOG.trace("Cannot add clip to album. Write operations not enabled.");
+        LOG.info("Cannot add clip to album. Write operations not enabled.");
         return null;
     }
 
     public boolean deleteAlbum(long albumId) {
-        LOG.trace("Removing album with ID: {}", albumId);
+        LOG.info("Removing album with ID: {}", albumId);
 
         if(RestConfig.getWriteEnabled()) {
             Album a = em.find(Album.class, albumId);
@@ -101,7 +119,7 @@ public class AlbumBean {
                     beginTx();
                     em.remove(a);
                     commitTx();
-                    LOG.trace("Removed album.");
+                    LOG.info("Removed album.");
                 } catch (Exception e) {
                     rollbackTx();
                     LOG.error("Failed to remove album: {}. An error occured: {}.", a, e);
@@ -109,14 +127,14 @@ public class AlbumBean {
 
                 return true;
             }
-            LOG.trace("Album with ID: {} not found.", albumId);
+            LOG.info("Album with ID: {} not found.", albumId);
         }
-        LOG.trace("Cannot remove album. Write operations not enabled.");
+        LOG.info("Cannot remove album. Write operations not enabled.");
         return false;
     }
 
     public Album putAlbum(Album album) {
-        LOG.trace("Updating album: {}", album);
+        LOG.info("Updating album: {}", album);
 
         if(RestConfig.getWriteEnabled()) {
             Album a = em.find(Album.class, album.getID());
@@ -126,7 +144,7 @@ public class AlbumBean {
                     beginTx();
                     a = em.merge(album);
                     commitTx();
-                    LOG.trace("Album updated.");
+                    LOG.info("Album updated.");
                 } catch (Exception e) {
                     rollbackTx();
                     LOG.error("Failed to update album: {}. An error occured: {}.", a, e);
@@ -134,9 +152,9 @@ public class AlbumBean {
 
                 return a;
             }
-            LOG.trace("Album with ID: {} not found.", album.getID());
+            LOG.info("Album with ID: {} not found.", album.getID());
         }
-        LOG.trace("Cannot update album. Write operations not enabled.");
+        LOG.info("Cannot update album. Write operations not enabled.");
         return null;
     }
 
