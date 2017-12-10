@@ -11,11 +11,12 @@ services:
         target: /var/lib/mysql
         source: clip_db
   clip_management:
-    image: zigakern/clip_management
+    image: zigakern/clip_management:latest
     ports:
       - 8081:8081
     environment:
       - KUMULUZEE_DATASOURCES0_CONNECTIONURL=jdbc:mysql://db_mysql:3306/clips
+      - KUMULUZEE_SERVER_BASE-URL=http://192.168.99.100:8081
       #- REST-PROPERTIES_EXTERNAL-DEPENDENCIES_CLIP-SERVICE_WRITE-ENABLED=0
     depends_on:
       - db_mysql

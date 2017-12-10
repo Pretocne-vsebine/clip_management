@@ -41,6 +41,8 @@ spec:
                       value: http://etcd:2379
                     - name: KUMULUZEE_DISCOVERY_ETCD_HOSTS
                       value: http://etcd:2379
+                    - name: KUMULUZEE_SERVER_BASE-URL
+                      value: http://clip-management:8081
                   ports:
                     - containerPort: 8081
                       name: app

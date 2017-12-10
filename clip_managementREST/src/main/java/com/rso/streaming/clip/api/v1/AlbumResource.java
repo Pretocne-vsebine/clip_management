@@ -1,5 +1,7 @@
 package com.rso.streaming.clip.api.v1;
 
+import com.kumuluz.ee.logs.cdi.Log;
+import com.kumuluz.ee.logs.cdi.LogParams;
 import com.rso.streaming.ententies.Album;
 import com.rso.streaming.ententies.logic.AlbumBean;
 import io.swagger.annotations.Api;
@@ -20,6 +22,7 @@ import java.util.List;
 @Path("/albums")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Log(LogParams.METRICS)
 public class AlbumResource {
 
     @Inject

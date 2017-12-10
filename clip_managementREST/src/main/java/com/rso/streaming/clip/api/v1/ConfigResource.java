@@ -15,6 +15,7 @@ import javax.ws.rs.core.UriInfo;
 @Api(value = "Config")
 @ApplicationScoped
 @Path("/config")
+/* For testing purposes */
 public class ConfigResource {
     @Inject
     private RestConfig restConfig;
@@ -23,7 +24,7 @@ public class ConfigResource {
     protected UriInfo uriInfo;
 
     @GET
-    public Response getClips() {
+    public Response getConfig() {
         return Response.ok(restConfig.getWriteEnabled()).build();
     }
 }

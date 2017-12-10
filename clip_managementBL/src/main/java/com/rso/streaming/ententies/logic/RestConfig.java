@@ -18,6 +18,5 @@ public class RestConfig {
 
     public void setWriteEnabled(boolean writeEnabled) {
         this.writeEnabled = writeEnabled;
-        System.out.println(writeEnabled);
     }
 }
