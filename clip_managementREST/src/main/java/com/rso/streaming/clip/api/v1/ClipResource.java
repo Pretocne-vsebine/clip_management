@@ -9,6 +9,8 @@ import com.rso.streaming.ententies.logic.AlbumBean;
 import com.rso.streaming.ententies.logic.ClipBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -40,6 +42,7 @@ public class ClipResource {
 
     @GET
     @ApiOperation(value = "Get clips", response = Clip.class)
+    @Timed(name = "ClipsGetTime")
     public Response getClips() {
         List<Clip> clips = clipBean.getClips();
 
@@ -64,6 +67,7 @@ public class ClipResource {
     }
 
     @POST
+    @Metered(name = "ClipCreation")
     public Response createClip(Clip clip) {
 
         if (clip.getTitle().isEmpty() || clip.getAuthor().isEmpty()) {
@@ -100,6 +104,7 @@ public class ClipResource {
 
     @DELETE
     @Path("{clipId}")
+    @Metered(name = "ClipDeletion")
     public Response deleteClip(@PathParam("clipId") Long clipId) {
         boolean deleted = clipBean.deleteClip(clipId);
 

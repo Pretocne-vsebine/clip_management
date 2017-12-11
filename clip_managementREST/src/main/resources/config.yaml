@@ -49,6 +49,15 @@ kumuluzee:
           jndi-name: jdbc/ClipsDB
         http-health-check:
                 connection-url: http://localhost:8081/v1/albums/healthResponseCheck
+  metrics:
+    servlet:
+      enabled: true
+      mapping: /metrics
+    web-instrumentation:
+      - name: clipsEndpoint
+        url-pattern: /v1/clips/*
+      - name: albumsEndpoint
+        url-pattern: /v1/albums/*
 rest-properties:
   external-dependencies:
     clip-service:

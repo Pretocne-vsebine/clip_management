@@ -33,7 +33,7 @@ spec:
         spec:
             containers:
                 - name: app-clip
-                  image: zigakern/clip_management
+                  image: zigakern/clip_management:v0.1.5
                   env:
                     - name: KUMULUZEE_DATASOURCES0_CONNECTIONURL
                       value: jdbc:mysql://clip-mysql:3306/clips
@@ -47,3 +47,9 @@ spec:
                     - containerPort: 8081
                       name: app
                       protocol: TCP
+                  livenessProbe:
+                        httpGet:
+                          path: /health
+                          port: 8081
+                        initialDelaySeconds: 60
+                        periodSeconds: 5

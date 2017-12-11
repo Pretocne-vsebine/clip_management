@@ -7,6 +7,8 @@ import com.rso.streaming.ententies.Album;
 import com.rso.streaming.ententies.logic.AlbumBean;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -25,7 +27,6 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Log(LogParams.METRICS)
-@Interceptors(LogContextInterceptor.class)
 public class AlbumResource {
 
     @Inject
@@ -36,6 +37,7 @@ public class AlbumResource {
 
     @GET
     @ApiOperation(value = "Get Albums", notes = "Returns a list of all albums.", response = Album.class)
+    @Timed(name = "AlbumsGetTime")
     public Response getAlbums() {
         List<Album> albums = albumBean.getAlbums();
 
@@ -66,6 +68,7 @@ public class AlbumResource {
     }
 
     @POST
+    @Metered(name = "AlbumCreation")
     public Response createAlbum(Album album) {
 
         if (album.getTitle().isEmpty() || album.getArtist().isEmpty()) {
@@ -97,6 +100,7 @@ public class AlbumResource {
 
     @DELETE
     @Path("{albumId}")
+    @Metered(name = "AlbumDeletion")
     public Response deleteAlbum(@PathParam("albumId") Long albumId) {
         boolean deleted = albumBean.deleteAlbum(albumId);
 
