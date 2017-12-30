@@ -15,7 +15,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-pv-claim
+  name: mysqlclip-pv-claim
   labels:
     app: clip-management
 spec:
@@ -67,4 +67,4 @@ spec:
             volumes:
                 - name: mysql-persistent-storage
                   persistentVolumeClaim:
-                      claimName: mysql-pv-claim
+                      claimName: mysqlclip-pv-claim

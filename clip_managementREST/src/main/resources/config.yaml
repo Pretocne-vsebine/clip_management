@@ -48,7 +48,7 @@ kumuluzee:
         data-source-health-check:
           jndi-name: jdbc/ClipsDB
         http-health-check:
-                connection-url: http://localhost:8081/v1/albums/healthResponseCheck
+          connection-url: http://localhost:8081/v1/albums/healthResponseCheck
   metrics:
     servlet:
       enabled: true
